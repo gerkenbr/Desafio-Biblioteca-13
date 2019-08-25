@@ -242,15 +242,68 @@ class Emprestimo {
 //1. Modifique o diagrama de classes para que modele o objeto Biblioteca.
 //2. Implemente a classe criando os atributos necessários.
 
+class Categoria {
+    var nome: String
+    var codigo: Int
+    var descricao: String
+    
+    init(nome: String, codigo: Int, descricao: String) {
+        self.nome = nome
+        self.codigo = codigo
+        self.descricao = descricao
+    }
+}
+
+
 class Biblioteca {
     let nomeDaBiblioteca: String
     var listaDeSocios: [Socio] = [Socio]()
     var listaDeEmprestimos: [Emprestimo] = [Emprestimo]()
     var listaDeLivros: [Livro] = [Livro]()
+    var listaDeCategorias: [Categoria] = [Categoria]()
+    var dicionarioCategoria: [Int:[Livro]] = [Int:[Livro]]()
     
     init(nomeDaBiblioteca: String) {
         self.nomeDaBiblioteca = nomeDaBiblioteca
     }
+    
+    func registrar(categoria: Categoria) -> Void {
+        var jaExiste: Bool = false
+        for categoriaAtual in self.listaDeCategorias {
+            if categoriaAtual === categoria {
+                print("A categoria \(categoria) já estava cadastrada")
+                jaExiste = true
+            }
+        }
+        if jaExiste == false {
+            listaDeCategorias.append(categoria)
+            print("A categoria \(categoria) foi adicionada à lista de categorias")
+        }
+    }
+    
+    func adicionar(umLivro: Livro, a umaCategoria: Categoria) -> Void {
+        var jaExiste: Bool = false
+        for (codigo,_) in dicionarioCategoria {
+            if codigo == umaCategoria.codigo {
+                jaExiste = true
+            }
+        }
+        if jaExiste == true {
+            var listaAtual: [Livro] = dicionarioCategoria[umaCategoria.codigo]!
+            if listaAtual.firstIndex(where: {$0 === umLivro}) != nil { // verifica se o livro ja existe na lista
+                listaAtual.append(umLivro) // se nao existe, atualiza a lista com o novo numero
+                dicionarioCategoria.updateValue(listaAtual, forKey: umaCategoria.codigo) // atualiza o dicionario
+            } else { print("livro já está registrado na categoria")}
+        } else {
+            dicionarioCategoria.updateValue([umLivro], forKey: umaCategoria.codigo)
+        }
+    }
+    
+    func listaLivros(deUmaCategoria: Categoria) -> [Livro] {
+        
+    }
+    
+    
     func registrar(socio: Socio...) {
         for socioAtual in socio {
             listaDeSocios.append(socioAtual)
@@ -429,3 +482,4 @@ biblioteca1.retornar(listaDeExemplares: [exemplar4,exemplar7], idSócio: 333)
 //2. Implemente a classe Categoria definindo os atributos necessários.
 //3. Modifique a classe Biblioteca da seguinte forma: ○ adicionando uma lista de categorias, onde todas são registradas. ○ adicionando um dicionário com chaves, que serão os códigos das categorias, e valores, que serão uma lista de livros associados a essa categoria.
 //4. Implemente os métodos a seguir:○ registrar(categoria: Categoria) -> Void  que deve adicionar a categoria recebida por parâmetro à lista de categorias. ○ adicionar(umLivro: Livro, a umaCategoria: Categoria) -> Void que deve receber como parâmetros uma categoria e um livro, e adicionar o livro ao dicionário com a categoria correspondente. Se a categoria não existir, crie a categoria e a lista ao adicionar o livro.  ○ listarLivros(de umaCategoria: Categoria) -> [Livro] que deve receber como parâmetro uma categoria e retornar uma lista com todos os livros que pertencem a essa categoria. ○ informarCategoria(de umLivro: Livro) -> Categoria? que deve receber um livro como parâmetro e retornar a categoria a qual ele pertence.
+
